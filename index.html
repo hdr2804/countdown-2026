@@ -23,10 +23,6 @@
       padding: 20px;
     }
 
-    h1 {
-      margin-bottom: 20px;
-    }
-
     .countdown {
       display: flex;
       justify-content: center;
@@ -44,12 +40,6 @@
     .countdown span {
       font-size: 32px;
       font-weight: bold;
-      display: block;
-    }
-
-    small {
-      font-size: 14px;
-      opacity: 0.8;
     }
 
     #message {
@@ -57,59 +47,66 @@
       margin-top: 20px;
     }
 
-    /* =====================
-       ONCHAT FIX (IMPORTANT)
-       ===================== */
+    /* =========================
+       ONCHAT BUBBLE NOTIFICATION
+       ========================= */
 
-    /* Sembunyikan SEMUA iframe saat chat di-minimize */
+    /* Sembunyikan iframe OnChat saat minimize */
     body.chat-hidden iframe {
       display: none !important;
     }
 
-    /* Tombol chat */
-    #chat-toggle {
+    /* Bubble button */
+    #chat-bubble {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      z-index: 10001;
-      width: 50px;
-      height: 50px;
+      width: 58px;
+      height: 58px;
       border-radius: 50%;
-      border: none;
       background: #00c853;
       color: white;
-      font-size: 22px;
+      border: none;
       cursor: pointer;
+      font-size: 26px;
+      display: none;
+      z-index: 10001;
+      box-shadow: 0 8px 20px rgba(0,0,0,.3);
+      transition: transform .2s ease;
+    }
+
+    #chat-bubble:hover {
+      transform: scale(1.1);
+    }
+
+    /* Badge notifikasi (opsional visual) */
+    #chat-bubble::after {
+      content: "";
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 10px;
+      height: 10px;
+      background: red;
+      border-radius: 50%;
       display: none;
     }
 
-    #chat-toggle:hover {
-      background: #00b248;
+    body.has-notification #chat-bubble::after {
+      display: block;
     }
   </style>
 </head>
 
-<body class="chat-hidden">
+<body class="chat-hidden has-notification">
   <div class="container">
     <h1>🎆 Happy New Year 2026 🎆</h1>
 
     <div class="countdown">
-      <div>
-        <span id="days">0</span>
-        <small>Hari</small>
-      </div>
-      <div>
-        <span id="hours">0</span>
-        <small>Jam</small>
-      </div>
-      <div>
-        <span id="minutes">0</span>
-        <small>Menit</small>
-      </div>
-      <div>
-        <span id="seconds">0</span>
-        <small>Detik</small>
-      </div>
+      <div><span id="days">0</span><br>Hari</div>
+      <div><span id="hours">0</span><br>Jam</div>
+      <div><span id="minutes">0</span><br>Menit</div>
+      <div><span id="seconds">0</span><br>Detik</div>
     </div>
 
     <p id="message"></p>
@@ -117,7 +114,9 @@
 
   <!-- OnChat -->
   <div id="onchat-widget"></div>
-  <button id="chat-toggle">💬</button>
+
+  <!-- Bubble -->
+  <button id="chat-bubble">💬</button>
 
   <script src="https://onchat.sebayaki.com/widget.js"></script>
 
@@ -126,9 +125,9 @@
        CONFIG
        ===================== */
     const targetDate = new Date("January 1, 2026 00:00:00").getTime();
+    const bubble = document.getElementById("chat-bubble");
 
-    const chatToggle = document.getElementById("chat-toggle");
-    let chatVisible = false;
+    let chatOpen = false;
 
     /* =====================
        COUNTDOWN
@@ -144,11 +143,9 @@
         document.getElementById("message").innerText =
           "🎉 Selamat Tahun Baru 2026! 🎉";
 
-        // Tampilkan chat & tombol
-        document.body.classList.remove("chat-hidden");
-        chatToggle.style.display = "block";
-        chatToggle.innerText = "✖";
-        chatVisible = true;
+        // Munculkan bubble
+        bubble.style.display = "block";
+        document.body.classList.add("has-notification");
 
         return;
       }
@@ -164,17 +161,18 @@
     }, 1000);
 
     /* =====================
-       CHAT TOGGLE (REAL FIX)
+       BUBBLE TOGGLE
        ===================== */
-    chatToggle.addEventListener("click", () => {
-      chatVisible = !chatVisible;
+    bubble.addEventListener("click", () => {
+      chatOpen = !chatOpen;
 
-      if (chatVisible) {
+      if (chatOpen) {
         document.body.classList.remove("chat-hidden");
-        chatToggle.innerText = "✖";
+        document.body.classList.remove("has-notification");
+        bubble.innerText = "✖";
       } else {
         document.body.classList.add("chat-hidden");
-        chatToggle.innerText = "💬";
+        bubble.innerText = "💬";
       }
     });
 
