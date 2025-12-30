@@ -40,14 +40,9 @@ body {
 }
 
 /* ======================
-   ONCHAT BUBBLE SYSTEM
+   CHAT BUBBLE
    ====================== */
 
-body.chat-hidden iframe[src*="onchat"] {
-  display: none !important;
-}
-
-/* Bubble */
 #chat-bubble {
   position: fixed;
   bottom: 20px;
@@ -64,6 +59,11 @@ body.chat-hidden iframe[src*="onchat"] {
   z-index: 10001;
   box-shadow: 0 8px 20px rgba(0,0,0,.3);
 }
+
+/* Desktop inline chat */
+body.chat-hidden iframe[src*="onchat"] {
+  display: none !important;
+}
 </style>
 </head>
 
@@ -71,26 +71,38 @@ body.chat-hidden iframe[src*="onchat"] {
 
 <div class="container">
   <h1>🎆 Happy New Year 2026 🎆</h1>
+
   <div class="countdown">
     <div><span id="d">0</span><br>Hari</div>
     <div><span id="h">0</span><br>Jam</div>
     <div><span id="m">0</span><br>Menit</div>
     <div><span id="s">0</span><br>Detik</div>
   </div>
+
   <p id="msg"></p>
 </div>
 
+<!-- OnChat Desktop -->
 <div id="onchat-widget"></div>
+
+<!-- Bubble -->
 <button id="chat-bubble">💬</button>
 
 <script src="https://onchat.sebayaki.com/widget.js"></script>
 
 <script>
-const target = new Date("2026-01-01T00:00:00").getTime();
+/* ======================
+   UTIL
+   ====================== */
+const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 const bubble = document.getElementById("chat-bubble");
 let chatOpen = false;
 
-/* Countdown */
+/* ======================
+   COUNTDOWN
+   ====================== */
+const target = new Date("2026-01-01T00:00:00").getTime();
+
 setInterval(() => {
   const now = Date.now();
   const diff = target - now;
@@ -110,20 +122,36 @@ setInterval(() => {
   s.innerText = Math.floor(diff % 60000 / 1000);
 }, 1000);
 
-/* Bubble toggle */
+/* ======================
+   BUBBLE BEHAVIOR
+   ====================== */
 bubble.onclick = () => {
+  if (isMobile) {
+    // MOBILE → redirect ke halaman chat
+    window.open(
+      "https://onchat.sebayaki.com/happy-new-year",
+      "_blank"
+    );
+    return;
+  }
+
+  // DESKTOP → toggle inline chat
   chatOpen = !chatOpen;
   document.body.classList.toggle("chat-hidden", !chatOpen);
   bubble.innerText = chatOpen ? "✖" : "💬";
 };
 
-/* Init OnChat (MOBILE ENABLED) */
-OnChat.mount("#onchat-widget", {
-  channel: "happy-new-year",
-  theme: "beeper-green",
-  hideMobileTabs: false,
-  hideBrand: true
-});
+/* ======================
+   INIT ONCHAT (DESKTOP)
+   ====================== */
+if (!isMobile) {
+  OnChat.mount("#onchat-widget", {
+    channel: "happy-new-year",
+    theme: "beeper-green",
+    hideBrand: true
+  });
+}
 </script>
+
 </body>
 </html>
