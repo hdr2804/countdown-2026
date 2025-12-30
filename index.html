@@ -57,13 +57,34 @@
       margin-top: 20px;
     }
 
-    /* OnChat posisi */
+    /* OnChat */
     #onchat-widget {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      z-index: 9999;
+      display: none;
+    }
+
+    /* Tombol minimize */
+    #chat-toggle {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      z-index: 9999;
-      display: none; /* muncul saat countdown selesai */
+      z-index: 10000;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: none;
+      background: #00c853;
+      color: white;
+      font-size: 22px;
+      cursor: pointer;
+      display: none;
+    }
+
+    #chat-toggle:hover {
+      background: #00b248;
     }
   </style>
 </head>
@@ -94,41 +115,67 @@
     <p id="message"></p>
   </div>
 
-  <!-- OnChat Widget -->
+  <!-- OnChat -->
   <div id="onchat-widget"></div>
+  <button id="chat-toggle">💬</button>
+
   <script src="https://onchat.sebayaki.com/widget.js"></script>
 
   <script>
-    /* Countdown Logic */
+    /* =====================
+       COUNTDOWN + ONCHAT
+       ===================== */
+
     const targetDate = new Date("January 1, 2026 00:00:00").getTime();
 
+    const chatWidget = document.getElementById("onchat-widget");
+    const chatToggle = document.getElementById("chat-toggle");
+    let chatVisible = true;
+
+    // Countdown
     const timer = setInterval(() => {
       const now = new Date().getTime();
       const distance = targetDate - now;
 
       if (distance < 0) {
         clearInterval(timer);
+
         document.querySelector(".countdown").style.display = "none";
         document.getElementById("message").innerText =
           "🎉 Selamat Tahun Baru 2026! 🎉";
 
-        // Tampilkan OnChat saat tahun baru
-        document.getElementById("onchat-widget").style.display = "block";
+        // Tampilkan chat & tombol
+        chatWidget.style.display = "block";
+        chatToggle.style.display = "block";
+        chatToggle.innerText = "✖";
+
         return;
       }
 
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-      document.getElementById("days").innerText = days;
-      document.getElementById("hours").innerText = hours;
-      document.getElementById("minutes").innerText = minutes;
-      document.getElementById("seconds").innerText = seconds;
+      document.getElementById("days").innerText =
+        Math.floor(distance / (1000 * 60 * 60 * 24));
+      document.getElementById("hours").innerText =
+        Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      document.getElementById("minutes").innerText =
+        Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      document.getElementById("seconds").innerText =
+        Math.floor((distance % (1000 * 60)) / 1000);
     }, 1000);
 
-    /* OnChat Init */
+    // Toggle minimize / maximize chat
+    chatToggle.addEventListener("click", () => {
+      chatVisible = !chatVisible;
+
+      if (chatVisible) {
+        chatWidget.style.display = "block";
+        chatToggle.innerText = "✖";
+      } else {
+        chatWidget.style.display = "none";
+        chatToggle.innerText = "💬";
+      }
+    });
+
+    // Init OnChat
     OnChat.mount('#onchat-widget', {
       channel: 'happy-new-year',
       theme: 'beeper-green',
