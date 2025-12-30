@@ -57,21 +57,21 @@
       margin-top: 20px;
     }
 
-    /* OnChat */
-    #onchat-widget {
-      position: fixed;
-      bottom: 80px;
-      right: 20px;
-      z-index: 9999;
-      display: none;
+    /* =====================
+       ONCHAT FIX (IMPORTANT)
+       ===================== */
+
+    /* Sembunyikan SEMUA iframe saat chat di-minimize */
+    body.chat-hidden iframe {
+      display: none !important;
     }
 
-    /* Tombol minimize */
+    /* Tombol chat */
     #chat-toggle {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      z-index: 10000;
+      z-index: 10001;
       width: 50px;
       height: 50px;
       border-radius: 50%;
@@ -89,7 +89,7 @@
   </style>
 </head>
 
-<body>
+<body class="chat-hidden">
   <div class="container">
     <h1>🎆 Happy New Year 2026 🎆</h1>
 
@@ -123,16 +123,16 @@
 
   <script>
     /* =====================
-       COUNTDOWN + ONCHAT
+       CONFIG
        ===================== */
-
     const targetDate = new Date("January 1, 2026 00:00:00").getTime();
 
-    const chatWidget = document.getElementById("onchat-widget");
     const chatToggle = document.getElementById("chat-toggle");
-    let chatVisible = true;
+    let chatVisible = false;
 
-    // Countdown
+    /* =====================
+       COUNTDOWN
+       ===================== */
     const timer = setInterval(() => {
       const now = new Date().getTime();
       const distance = targetDate - now;
@@ -145,9 +145,10 @@
           "🎉 Selamat Tahun Baru 2026! 🎉";
 
         // Tampilkan chat & tombol
-        chatWidget.style.display = "block";
+        document.body.classList.remove("chat-hidden");
         chatToggle.style.display = "block";
         chatToggle.innerText = "✖";
+        chatVisible = true;
 
         return;
       }
@@ -162,20 +163,24 @@
         Math.floor((distance % (1000 * 60)) / 1000);
     }, 1000);
 
-    // Toggle minimize / maximize chat
+    /* =====================
+       CHAT TOGGLE (REAL FIX)
+       ===================== */
     chatToggle.addEventListener("click", () => {
       chatVisible = !chatVisible;
 
       if (chatVisible) {
-        chatWidget.style.display = "block";
+        document.body.classList.remove("chat-hidden");
         chatToggle.innerText = "✖";
       } else {
-        chatWidget.style.display = "none";
+        document.body.classList.add("chat-hidden");
         chatToggle.innerText = "💬";
       }
     });
 
-    // Init OnChat
+    /* =====================
+       INIT ONCHAT
+       ===================== */
     OnChat.mount('#onchat-widget', {
       channel: 'happy-new-year',
       theme: 'beeper-green',
