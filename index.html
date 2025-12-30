@@ -18,7 +18,10 @@ body {
   text-align: center;
 }
 
-.container { max-width: 500px; padding: 20px; }
+.container {
+  max-width: 500px;
+  padding: 20px;
+}
 
 .countdown {
   display: flex;
@@ -55,12 +58,11 @@ body {
   color: white;
   font-size: 26px;
   cursor: pointer;
-  display: none;
   z-index: 10001;
   box-shadow: 0 8px 20px rgba(0,0,0,.3);
 }
 
-/* Desktop inline chat */
+/* Desktop inline chat hide */
 body.chat-hidden iframe[src*="onchat"] {
   display: none !important;
 }
@@ -92,14 +94,14 @@ body.chat-hidden iframe[src*="onchat"] {
 
 <script>
 /* ======================
-   UTIL
+   DETECTION
    ====================== */
 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 const bubble = document.getElementById("chat-bubble");
 let chatOpen = false;
 
 /* ======================
-   COUNTDOWN
+   COUNTDOWN (NORMAL)
    ====================== */
 const target = new Date("2026-01-01T00:00:00").getTime();
 
@@ -111,8 +113,6 @@ setInterval(() => {
     document.querySelector(".countdown").style.display = "none";
     document.getElementById("msg").innerText =
       "🎉 Selamat Tahun Baru 2026! 🎉";
-
-    bubble.style.display = "block";
     return;
   }
 
@@ -123,11 +123,10 @@ setInterval(() => {
 }, 1000);
 
 /* ======================
-   BUBBLE BEHAVIOR
+   BUBBLE ACTION
    ====================== */
 bubble.onclick = () => {
   if (isMobile) {
-    // MOBILE → redirect ke halaman chat
     window.open(
       "https://onchat.sebayaki.com/happy-new-year",
       "_blank"
@@ -135,14 +134,13 @@ bubble.onclick = () => {
     return;
   }
 
-  // DESKTOP → toggle inline chat
   chatOpen = !chatOpen;
   document.body.classList.toggle("chat-hidden", !chatOpen);
   bubble.innerText = chatOpen ? "✖" : "💬";
 };
 
 /* ======================
-   INIT ONCHAT (DESKTOP)
+   INIT ONCHAT (DESKTOP ONLY)
    ====================== */
 if (!isMobile) {
   OnChat.mount("#onchat-widget", {
