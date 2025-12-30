@@ -1,190 +1,129 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Countdown Happy New Year 2026</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Countdown Happy New Year 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      text-align: center;
-    }
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  text-align: center;
+}
 
-    .container {
-      max-width: 500px;
-      padding: 20px;
-    }
+.container { max-width: 500px; padding: 20px; }
 
-    .countdown {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin: 30px 0;
-    }
+.countdown {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 30px 0;
+}
 
-    .countdown div {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 15px;
-      border-radius: 10px;
-      min-width: 80px;
-    }
+.countdown div {
+  background: rgba(255,255,255,.1);
+  padding: 15px;
+  border-radius: 10px;
+  min-width: 70px;
+}
 
-    .countdown span {
-      font-size: 32px;
-      font-weight: bold;
-    }
+.countdown span {
+  font-size: 30px;
+  font-weight: bold;
+}
 
-    #message {
-      font-size: 24px;
-      margin-top: 20px;
-    }
+/* ======================
+   ONCHAT BUBBLE SYSTEM
+   ====================== */
 
-    /* =========================
-       ONCHAT BUBBLE NOTIFICATION
-       ========================= */
+body.chat-hidden iframe[src*="onchat"] {
+  display: none !important;
+}
 
-    /* Sembunyikan iframe OnChat saat minimize */
-    body.chat-hidden iframe {
-      display: none !important;
-    }
-
-    /* Bubble button */
-    #chat-bubble {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      background: #00c853;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-size: 26px;
-      display: none;
-      z-index: 10001;
-      box-shadow: 0 8px 20px rgba(0,0,0,.3);
-      transition: transform .2s ease;
-    }
-
-    #chat-bubble:hover {
-      transform: scale(1.1);
-    }
-
-    /* Badge notifikasi (opsional visual) */
-    #chat-bubble::after {
-      content: "";
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 10px;
-      height: 10px;
-      background: red;
-      border-radius: 50%;
-      display: none;
-    }
-
-    body.has-notification #chat-bubble::after {
-      display: block;
-    }
-  </style>
+/* Bubble */
+#chat-bubble {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #00c853;
+  border: none;
+  color: white;
+  font-size: 26px;
+  cursor: pointer;
+  display: none;
+  z-index: 10001;
+  box-shadow: 0 8px 20px rgba(0,0,0,.3);
+}
+</style>
 </head>
 
-<body class="chat-hidden has-notification">
-  <div class="container">
-    <h1>🎆 Happy New Year 2026 🎆</h1>
+<body class="chat-hidden">
 
-    <div class="countdown">
-      <div><span id="days">0</span><br>Hari</div>
-      <div><span id="hours">0</span><br>Jam</div>
-      <div><span id="minutes">0</span><br>Menit</div>
-      <div><span id="seconds">0</span><br>Detik</div>
-    </div>
-
-    <p id="message"></p>
+<div class="container">
+  <h1>🎆 Happy New Year 2026 🎆</h1>
+  <div class="countdown">
+    <div><span id="d">0</span><br>Hari</div>
+    <div><span id="h">0</span><br>Jam</div>
+    <div><span id="m">0</span><br>Menit</div>
+    <div><span id="s">0</span><br>Detik</div>
   </div>
+  <p id="msg"></p>
+</div>
 
-  <!-- OnChat -->
-  <div id="onchat-widget"></div>
+<div id="onchat-widget"></div>
+<button id="chat-bubble">💬</button>
 
-  <!-- Bubble -->
-  <button id="chat-bubble">💬</button>
+<script src="https://onchat.sebayaki.com/widget.js"></script>
 
-  <script src="https://onchat.sebayaki.com/widget.js"></script>
+<script>
+const target = new Date("2026-01-01T00:00:00").getTime();
+const bubble = document.getElementById("chat-bubble");
+let chatOpen = false;
 
-  <script>
-    /* =====================
-       CONFIG
-       ===================== */
-    const targetDate = new Date("January 1, 2026 00:00:00").getTime();
-    const bubble = document.getElementById("chat-bubble");
+/* Countdown */
+setInterval(() => {
+  const now = Date.now();
+  const diff = target - now;
 
-    let chatOpen = false;
+  if (diff < 0) {
+    document.querySelector(".countdown").style.display = "none";
+    document.getElementById("msg").innerText =
+      "🎉 Selamat Tahun Baru 2026! 🎉";
 
-    /* =====================
-       COUNTDOWN
-       ===================== */
-    const timer = setInterval(() => {
-      const now = new Date().getTime();
-      const distance = targetDate - now;
+    bubble.style.display = "block";
+    return;
+  }
 
-      if (distance < 0) {
-        clearInterval(timer);
+  d.innerText = Math.floor(diff / 86400000);
+  h.innerText = Math.floor(diff % 86400000 / 3600000);
+  m.innerText = Math.floor(diff % 3600000 / 60000);
+  s.innerText = Math.floor(diff % 60000 / 1000);
+}, 1000);
 
-        document.querySelector(".countdown").style.display = "none";
-        document.getElementById("message").innerText =
-          "🎉 Selamat Tahun Baru 2026! 🎉";
+/* Bubble toggle */
+bubble.onclick = () => {
+  chatOpen = !chatOpen;
+  document.body.classList.toggle("chat-hidden", !chatOpen);
+  bubble.innerText = chatOpen ? "✖" : "💬";
+};
 
-        // Munculkan bubble
-        bubble.style.display = "block";
-        document.body.classList.add("has-notification");
-
-        return;
-      }
-
-      document.getElementById("days").innerText =
-        Math.floor(distance / (1000 * 60 * 60 * 24));
-      document.getElementById("hours").innerText =
-        Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      document.getElementById("minutes").innerText =
-        Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      document.getElementById("seconds").innerText =
-        Math.floor((distance % (1000 * 60)) / 1000);
-    }, 1000);
-
-    /* =====================
-       BUBBLE TOGGLE
-       ===================== */
-    bubble.addEventListener("click", () => {
-      chatOpen = !chatOpen;
-
-      if (chatOpen) {
-        document.body.classList.remove("chat-hidden");
-        document.body.classList.remove("has-notification");
-        bubble.innerText = "✖";
-      } else {
-        document.body.classList.add("chat-hidden");
-        bubble.innerText = "💬";
-      }
-    });
-
-    /* =====================
-       INIT ONCHAT
-       ===================== */
-    OnChat.mount('#onchat-widget', {
-      channel: 'happy-new-year',
-      theme: 'beeper-green',
-      hideMobileTabs: true,
-      hideBrand: true
-    });
-  </script>
+/* Init OnChat (MOBILE ENABLED) */
+OnChat.mount("#onchat-widget", {
+  channel: "happy-new-year",
+  theme: "beeper-green",
+  hideMobileTabs: false,
+  hideBrand: true
+});
+</script>
 </body>
 </html>
