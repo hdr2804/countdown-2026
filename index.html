@@ -18,10 +18,7 @@ body {
   text-align: center;
 }
 
-.container {
-  max-width: 500px;
-  padding: 20px;
-}
+.container { max-width: 500px; padding: 20px; }
 
 .countdown {
   display: flex;
@@ -42,10 +39,7 @@ body {
   font-weight: bold;
 }
 
-/* ======================
-   CHAT BUBBLE
-   ====================== */
-
+/* Bubble */
 #chat-bubble {
   position: fixed;
   bottom: 20px;
@@ -62,14 +56,14 @@ body {
   box-shadow: 0 8px 20px rgba(0,0,0,.3);
 }
 
-/* Desktop inline chat hide */
+/* Sembunyikan chat desktop saat minimize */
 body.chat-hidden iframe[src*="onchat"] {
   display: none !important;
 }
 </style>
 </head>
 
-<body class="chat-hidden">
+<body>
 
 <div class="container">
   <h1>🎆 Happy New Year 2026 🎆</h1>
@@ -94,14 +88,14 @@ body.chat-hidden iframe[src*="onchat"] {
 
 <script>
 /* ======================
-   DETECTION
+   DETEKSI DEVICE
    ====================== */
 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 const bubble = document.getElementById("chat-bubble");
 let chatOpen = false;
 
 /* ======================
-   COUNTDOWN (NORMAL)
+   COUNTDOWN
    ====================== */
 const target = new Date("2026-01-01T00:00:00").getTime();
 
@@ -127,6 +121,7 @@ setInterval(() => {
    ====================== */
 bubble.onclick = () => {
   if (isMobile) {
+    // MOBILE → redirect (100% works)
     window.open(
       "https://onchat.sebayaki.com/happy-new-year",
       "_blank"
@@ -134,15 +129,18 @@ bubble.onclick = () => {
     return;
   }
 
+  // DESKTOP → toggle chat
   chatOpen = !chatOpen;
   document.body.classList.toggle("chat-hidden", !chatOpen);
   bubble.innerText = chatOpen ? "✖" : "💬";
 };
 
 /* ======================
-   INIT ONCHAT (DESKTOP ONLY)
+   INIT ONCHAT (DESKTOP)
    ====================== */
 if (!isMobile) {
+  document.body.classList.add("chat-hidden"); // default minimized
+
   OnChat.mount("#onchat-widget", {
     channel: "happy-new-year",
     theme: "beeper-green",
