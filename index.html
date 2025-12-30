@@ -3,20 +3,138 @@
 <head>
   <meta charset="UTF-8">
   <title>Countdown Happy New Year 2026</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 500px;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .countdown {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 30px 0;
+    }
+
+    .countdown div {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 10px;
+      min-width: 80px;
+    }
+
+    .countdown span {
+      font-size: 32px;
+      font-weight: bold;
+      display: block;
+    }
+
+    small {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    #message {
+      font-size: 24px;
+      margin-top: 20px;
+    }
+
+    /* OnChat posisi */
+    #onchat-widget {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: none; /* muncul saat countdown selesai */
+    }
+  </style>
 </head>
+
 <body>
   <div class="container">
     <h1>🎆 Happy New Year 2026 🎆</h1>
+
     <div class="countdown">
-      <div><span id="days">0</span><small>Hari</small></div>
-      <div><span id="hours">0</span><small>Jam</small></div>
-      <div><span id="minutes">0</span><small>Menit</small></div>
-      <div><span id="seconds">0</span><small>Detik</small></div>
+      <div>
+        <span id="days">0</span>
+        <small>Hari</small>
+      </div>
+      <div>
+        <span id="hours">0</span>
+        <small>Jam</small>
+      </div>
+      <div>
+        <span id="minutes">0</span>
+        <small>Menit</small>
+      </div>
+      <div>
+        <span id="seconds">0</span>
+        <small>Detik</small>
+      </div>
     </div>
+
     <p id="message"></p>
   </div>
 
-  <script src="script.js"></script>
+  <!-- OnChat Widget -->
+  <div id="onchat-widget"></div>
+  <script src="https://onchat.sebayaki.com/widget.js"></script>
+
+  <script>
+    /* Countdown Logic */
+    const targetDate = new Date("January 1, 2026 00:00:00").getTime();
+
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+
+      if (distance < 0) {
+        clearInterval(timer);
+        document.querySelector(".countdown").style.display = "none";
+        document.getElementById("message").innerText =
+          "🎉 Selamat Tahun Baru 2026! 🎉";
+
+        // Tampilkan OnChat saat tahun baru
+        document.getElementById("onchat-widget").style.display = "block";
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      document.getElementById("days").innerText = days;
+      document.getElementById("hours").innerText = hours;
+      document.getElementById("minutes").innerText = minutes;
+      document.getElementById("seconds").innerText = seconds;
+    }, 1000);
+
+    /* OnChat Init */
+    OnChat.mount('#onchat-widget', {
+      channel: 'happy-new-year',
+      theme: 'beeper-green',
+      hideMobileTabs: true,
+      hideBrand: true
+    });
+  </script>
 </body>
 </html>
