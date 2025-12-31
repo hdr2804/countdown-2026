@@ -5,15 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Happy New Year 2026</title>
 
-<!-- FARCASTER FRAME ENTRY -->
-<meta property="fc:frame" content="vNext" />
-<meta property="fc:frame:image" content="https://your-domain.com/preview.png" />
-<meta property="fc:frame:button:1" content="Open Miniapp" />
-<meta property="fc:frame:button:1:action" content="link" />
-<meta property="fc:frame:button:1:target" content="https://your-domain.com/index.html" />
-
 <style>
-/* ===== BASE ===== */
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -33,16 +25,13 @@ body {
   padding: 24px;
 }
 
-/* HEADER */
 .header {
   position: fixed;
   top: 16px;
   left: 16px;
   font-size: 14px;
-  opacity: 0.9;
 }
 
-/* COUNTDOWN */
 .countdown {
   display: flex;
   gap: 12px;
@@ -61,12 +50,12 @@ body {
   font-weight: 700;
 }
 
-/* CHAT */
-body.chat-minimized iframe[src*="onchat"] {
-  display: none !important;
+/* Chat container */
+#onchat-widget.hidden {
+  display: none;
 }
 
-/* CHAT BUBBLE */
+/* Bubble */
 #chat-bubble {
   position: fixed;
   bottom: 18px;
@@ -80,24 +69,11 @@ body.chat-minimized iframe[src*="onchat"] {
   border: none;
   z-index: 9999;
   cursor: pointer;
-  box-shadow: 0 12px 32px rgba(0,0,0,0.45);
-}
-
-/* UNREAD DOT */
-#chat-bubble.unread::after {
-  content: "";
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #ef4444;
 }
 </style>
 </head>
 
-<body class="chat-minimized">
+<body>
 
 <div class="header" id="user-info">👤 Guest</div>
 
@@ -118,77 +94,48 @@ body.chat-minimized iframe[src*="onchat"] {
 <div id="onchat-widget"></div>
 
 <!-- Bubble -->
-<button id="chat-bubble" class="unread">💬</button>
+<button id="chat-bubble">💬</button>
 
 <script src="https://onchat.sebayaki.com/widget.js"></script>
 
 <script>
-/* =========================
-   GLOBAL STATE
-========================= */
 const params = new URLSearchParams(window.location.search);
-const fid = params.get("fid");
 const username = params.get("username");
+const displayName = username ? `@${username}` : "Guest";
+document.getElementById("user-info").textContent = `👤 ${displayName}`;
 
+const chatBubble = document.getElementById("chat-bubble");
+const chatContainer = document.getElementById("onchat-widget");
 let chatOpen = false;
 
-/* =========================
-   USER INFO
-========================= */
-const displayName = username ? `@${username}` : "Guest";
-document.getElementById("user-info").textContent =
-  fid ? `👤 ${displayName}` : "👤 Guest";
+/* Hide chat at start */
+chatContainer.classList.add("hidden");
 
-/* =========================
-   COUNTDOWN (UTC+0)
-========================= */
-/*
-  2026-01-01 00:00:00 UTC
-*/
+/* Countdown UTC */
 const targetUTC = Date.UTC(2026, 0, 1, 0, 0, 0);
 
 setInterval(() => {
-  const nowUTC = Date.now(); // UTC timestamp
-  const diff = targetUTC - nowUTC;
-
+  const diff = targetUTC - Date.now();
   if (diff <= 0) {
     document.querySelector(".countdown").style.display = "none";
     document.getElementById("msg").textContent =
       "🎉 Happy New Year 2026 (UTC)!";
     return;
   }
-
   d.textContent = Math.floor(diff / 86400000);
   h.textContent = Math.floor((diff % 86400000) / 3600000);
   m.textContent = Math.floor((diff % 3600000) / 60000);
   s.textContent = Math.floor((diff % 60000) / 1000);
 }, 1000);
 
-/* =========================
-   CHAT BUBBLE (ALWAYS AVAILABLE)
-========================= */
-const chatBubble = document.getElementById("chat-bubble");
-
-function openChat() {
-  chatOpen = true;
-  document.body.classList.remove("chat-minimized");
-  chatBubble.textContent = "✕";
-  chatBubble.classList.remove("unread");
-}
-
-function closeChat() {
-  chatOpen = false;
-  document.body.classList.add("chat-minimized");
-  chatBubble.textContent = "💬";
-}
-
+/* Bubble toggle */
 chatBubble.onclick = () => {
-  chatOpen ? closeChat() : openChat();
+  chatOpen = !chatOpen;
+  chatContainer.classList.toggle("hidden", !chatOpen);
+  chatBubble.textContent = chatOpen ? "✕" : "💬";
 };
 
-/* =========================
-   INIT ONCHAT (IMMEDIATE)
-========================= */
+/* Init OnChat */
 OnChat.mount("#onchat-widget", {
   channel: "happy-new-year",
   theme: "beeper-green",
