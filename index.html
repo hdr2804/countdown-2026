@@ -5,20 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Happy New Year 2026</title>
 
-<!-- =========================
-     FARCASTER FRAME (WAJIB)
-========================= -->
-<meta property="fc:frame" content="vNext" />
-<meta property="fc:frame:image"
-      content="https://countdown-2026-kohl.vercel.app/frame.png" />
-<meta property="fc:frame:button:1" content="Open Miniapp" />
-<meta property="fc:frame:button:1:action" content="link" />
-<meta property="fc:frame:button:1:target"
-      content="https://countdown-2026-kohl.vercel.app" />
+<!-- FARCASTER MINI APP META (WAJIB) -->
+<meta property="fc:miniapp" content="v1" />
+<meta property="fc:miniapp:name" content="Happy New Year 2026 Countdown" />
+<meta property="fc:miniapp:description" content="Global UTC countdown and live chat for New Year 2026" />
+<meta property="fc:miniapp:image" content="https://countdown-2026-kohl.vercel.app/frame.png" />
+<meta property="fc:miniapp:url" content="https://countdown-2026-kohl.vercel.app" />
 
-<!-- =========================
-     STYLE
-========================= -->
 <style>
 body {
   margin: 0;
@@ -38,16 +31,6 @@ body {
   padding: 24px;
 }
 
-.header {
-  position: fixed;
-  top: 16px;
-  left: 16px;
-  font-size: 14px;
-  opacity: 0.85;
-  z-index: 10;
-}
-
-/* Countdown */
 .countdown {
   display: flex;
   gap: 12px;
@@ -65,32 +48,13 @@ body {
   font-size: 28px;
   font-weight: 700;
 }
-
-/* Chat bubble (UX only) */
-#chat-bubble {
-  position: fixed;
-  bottom: 18px;
-  right: 18px;
-  width: 62px;
-  height: 62px;
-  border-radius: 50%;
-  background: #22c55e;
-  color: white;
-  font-size: 26px;
-  border: none;
-  z-index: 10000;
-  cursor: pointer;
-  box-shadow: 0 12px 32px rgba(0,0,0,0.45);
-}
 </style>
 </head>
 
 <body>
 
-<div class="header">🎆 Farcaster Miniapp</div>
-
 <div class="app">
-  <h1>Happy New Year 2026</h1>
+  <h1>🎆 Happy New Year 2026</h1>
 
   <div class="countdown">
     <div class="unit"><span id="d">0</span>Days</div>
@@ -102,23 +66,13 @@ body {
   <p id="msg"></p>
 </div>
 
-<!-- =========================
-     ONCHAT (JANGAN DIHIDE)
-========================= -->
+<!-- ONCHAT -->
 <div id="onchat-widget"></div>
 
-<!-- Bubble (visual hint only) -->
-<button id="chat-bubble">💬</button>
-
-<!-- =========================
-     SCRIPT
-========================= -->
 <script src="https://onchat.sebayaki.com/widget.js"></script>
 
 <script>
-/* =========================
-   COUNTDOWN (UTC+0)
-========================= */
+/* Countdown UTC */
 const targetUTC = Date.UTC(2026, 0, 1, 0, 0, 0);
 
 setInterval(() => {
@@ -137,20 +91,7 @@ setInterval(() => {
   s.textContent = Math.floor((diff % 60000) / 1000);
 }, 1000);
 
-/* =========================
-   CHAT UX
-========================= */
-/*
-  Bubble hanya UX cue.
-  OnChat handle UI sendiri di Warpcast WebView.
-*/
-document.getElementById("chat-bubble").onclick = () => {
-  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-};
-
-/* =========================
-   INIT ONCHAT
-========================= */
+/* Init OnChat */
 OnChat.mount("#onchat-widget", {
   channel: "happy-new-year",
   theme: "beeper-green",
