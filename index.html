@@ -3,9 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Happy New Year 2026</title>
+<title>Happy New Year 2026 Countdown</title>
 
-<!-- Open Graph -->
+<!-- =========================
+     OPEN GRAPH (TIMELINE PREVIEW)
+========================= -->
 <meta property="og:title" content="🎆 Happy New Year 2026 Countdown" />
 <meta property="og:description"
       content="Global UTC countdown + live chat. Join the celebration 🎉" />
@@ -14,6 +16,11 @@
 <meta property="og:url"
       content="https://countdown-2026-kohl.vercel.app" />
 <meta property="og:type" content="website" />
+
+<!-- =========================
+     FARCaster MINI APP SDK
+========================= -->
+<script src="https://unpkg.com/@farcaster/miniapp-sdk/dist/index.umd.js"></script>
 
 <style>
 body {
@@ -34,6 +41,10 @@ body {
   padding: 24px;
 }
 
+h1 {
+  margin-bottom: 24px;
+}
+
 .countdown {
   display: flex;
   gap: 12px;
@@ -43,7 +54,7 @@ body {
   background: rgba(255,255,255,0.1);
   border-radius: 16px;
   padding: 14px 16px;
-  min-width: 70px;
+  min-width: 72px;
 }
 
 .unit span {
@@ -76,41 +87,56 @@ body {
   <p id="msg"></p>
 </div>
 
+<!-- =========================
+     ONCHAT
+========================= -->
 <div id="onchat-widget"></div>
 
 <script src="https://onchat.sebayaki.com/widget.js"></script>
 
 <script>
-/* Countdown UTC */
+/* =========================
+   COUNTDOWN (UTC+0)
+========================= */
 const targetUTC = Date.UTC(2026, 0, 1, 0, 0, 0);
 
 setInterval(() => {
   const diff = targetUTC - Date.now();
+
   if (diff <= 0) {
     document.querySelector(".countdown").style.display = "none";
     document.getElementById("msg").textContent =
       "🎉 Happy New Year 2026 (UTC)!";
     return;
   }
+
   d.textContent = Math.floor(diff / 86400000);
   h.textContent = Math.floor((diff % 86400000) / 3600000);
   m.textContent = Math.floor((diff % 3600000) / 60000);
   s.textContent = Math.floor((diff % 60000) / 1000);
 }, 1000);
 
-/* Init OnChat */
+/* =========================
+   INIT ONCHAT
+========================= */
 OnChat.mount("#onchat-widget", {
   channel: "happy-new-year",
   theme: "beeper-green",
   hideBrand: true
 });
 
-/* Auto-focus chat (safe) */
+/* =========================
+   FARCaster READY (WAJIB)
+========================= */
+function farcasterReady() {
+  if (window.farcaster?.actions?.ready) {
+    window.farcaster.actions.ready();
+  }
+}
+
 window.addEventListener("load", () => {
-  setTimeout(() => {
-    const iframe = document.querySelector("iframe[src*='onchat']");
-    if (iframe) iframe.style.display = "block";
-  }, 800);
+  // beri waktu DOM + widget siap
+  setTimeout(farcasterReady, 600);
 });
 </script>
 
