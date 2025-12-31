@@ -1,0 +1,8 @@
+{
+  "miniapp": {
+    "name": "Happy New Year 2026 Countdown",
+    "description": "Global UTC countdown and live chat for New Year 2026",
+    "icon": "https://countdown-2026-kohl.vercel.app/frame.png",
+    "url": "https://countdown-2026-kohl.vercel.app"
+  }
+}
