@@ -5,14 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Happy New Year 2026</title>
 
-<!-- FARCASTER FRAME -->
+<!-- =========================
+     FARCASTER FRAME (WAJIB)
+========================= -->
 <meta property="fc:frame" content="vNext" />
-<meta property="fc:frame:image" content="https://countdown-2026-kohl.vercel.app/preview.png" />
+<meta property="fc:frame:image"
+      content="https://countdown-2026-kohl.vercel.app/frame.png" />
 <meta property="fc:frame:button:1" content="Open Miniapp" />
 <meta property="fc:frame:button:1:action" content="link" />
 <meta property="fc:frame:button:1:target"
       content="https://countdown-2026-kohl.vercel.app" />
 
+<!-- =========================
+     STYLE
+========================= -->
 <style>
 body {
   margin: 0;
@@ -37,8 +43,8 @@ body {
   top: 16px;
   left: 16px;
   font-size: 14px;
-  z-index: 10;
   opacity: 0.85;
+  z-index: 10;
 }
 
 /* Countdown */
@@ -96,18 +102,23 @@ body {
   <p id="msg"></p>
 </div>
 
-<!-- ONCHAT (DO NOT HIDE) -->
+<!-- =========================
+     ONCHAT (JANGAN DIHIDE)
+========================= -->
 <div id="onchat-widget"></div>
 
 <!-- Bubble (visual hint only) -->
 <button id="chat-bubble">💬</button>
 
+<!-- =========================
+     SCRIPT
+========================= -->
 <script src="https://onchat.sebayaki.com/widget.js"></script>
 
 <script>
-/* ======================
-   COUNTDOWN UTC+0
-====================== */
+/* =========================
+   COUNTDOWN (UTC+0)
+========================= */
 const targetUTC = Date.UTC(2026, 0, 1, 0, 0, 0);
 
 setInterval(() => {
@@ -126,20 +137,20 @@ setInterval(() => {
   s.textContent = Math.floor((diff % 60000) / 1000);
 }, 1000);
 
-/* ======================
+/* =========================
    CHAT UX
-====================== */
+========================= */
 /*
-  Bubble hanya UX hint.
-  OnChat handle open/close sendiri di Warpcast.
+  Bubble hanya UX cue.
+  OnChat handle UI sendiri di Warpcast WebView.
 */
 document.getElementById("chat-bubble").onclick = () => {
   window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
 };
 
-/* ======================
+/* =========================
    INIT ONCHAT
-====================== */
+========================= */
 OnChat.mount("#onchat-widget", {
   channel: "happy-new-year",
   theme: "beeper-green",
