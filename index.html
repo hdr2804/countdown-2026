@@ -1,152 +1,200 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Countdown Happy New Year 2026</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Happy New Year 2026</title>
+
+<!-- FARCASTER FRAME ENTRY -->
+<meta property="fc:frame" content="vNext" />
+<meta property="fc:frame:image" content="https://your-domain.com/preview.png" />
+<meta property="fc:frame:button:1" content="Open Miniapp" />
+<meta property="fc:frame:button:1:action" content="link" />
+<meta property="fc:frame:button:1:target" content="https://your-domain.com/index.html" />
 
 <style>
+/* ===== BASE ===== */
 body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
   margin: 0;
-  text-align: center;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: radial-gradient(circle at top, #1e293b, #020617);
+  color: white;
+  height: 100vh;
+  overflow: hidden;
 }
 
-.container { max-width: 500px; padding: 20px; }
+.app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+}
 
+/* HEADER */
+.header {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* COUNTDOWN */
 .countdown {
   display: flex;
   gap: 12px;
-  justify-content: center;
-  margin: 30px 0;
 }
 
-.countdown div {
-  background: rgba(255,255,255,.1);
-  padding: 15px;
-  border-radius: 10px;
+.unit {
+  background: rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 14px 16px;
   min-width: 70px;
 }
 
-.countdown span {
-  font-size: 30px;
-  font-weight: bold;
+.unit span {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
 }
 
-/* Bubble */
+/* CHAT */
+body.chat-minimized iframe[src*="onchat"] {
+  display: none !important;
+}
+
+/* CHAT BUBBLE */
 #chat-bubble {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 58px;
-  height: 58px;
+  bottom: 18px;
+  right: 18px;
+  width: 62px;
+  height: 62px;
   border-radius: 50%;
-  background: #00c853;
-  border: none;
+  background: #22c55e;
   color: white;
   font-size: 26px;
+  border: none;
+  z-index: 9999;
   cursor: pointer;
-  z-index: 10001;
-  box-shadow: 0 8px 20px rgba(0,0,0,.3);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.45);
 }
 
-/* Sembunyikan chat desktop saat minimize */
-body.chat-hidden iframe[src*="onchat"] {
-  display: none !important;
+/* UNREAD DOT */
+#chat-bubble.unread::after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ef4444;
 }
 </style>
 </head>
 
-<body>
+<body class="chat-minimized">
 
-<div class="container">
-  <h1>🎆 Happy New Year 2026 🎆</h1>
+<div class="header" id="user-info">👤 Guest</div>
+
+<div class="app">
+  <h1>🎆 Happy New Year 2026</h1>
 
   <div class="countdown">
-    <div><span id="d">0</span><br>Hari</div>
-    <div><span id="h">0</span><br>Jam</div>
-    <div><span id="m">0</span><br>Menit</div>
-    <div><span id="s">0</span><br>Detik</div>
+    <div class="unit"><span id="d">0</span>Days</div>
+    <div class="unit"><span id="h">0</span>Hours</div>
+    <div class="unit"><span id="m">0</span>Minutes</div>
+    <div class="unit"><span id="s">0</span>Seconds</div>
   </div>
 
   <p id="msg"></p>
 </div>
 
-<!-- OnChat Desktop -->
+<!-- OnChat -->
 <div id="onchat-widget"></div>
 
 <!-- Bubble -->
-<button id="chat-bubble">💬</button>
+<button id="chat-bubble" class="unread">💬</button>
 
 <script src="https://onchat.sebayaki.com/widget.js"></script>
 
 <script>
-/* ======================
-   DETEKSI DEVICE
-   ====================== */
-const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-const bubble = document.getElementById("chat-bubble");
+/* =========================
+   GLOBAL STATE
+========================= */
+const params = new URLSearchParams(window.location.search);
+const fid = params.get("fid");
+const username = params.get("username");
+
 let chatOpen = false;
 
-/* ======================
-   COUNTDOWN
-   ====================== */
-const target = new Date("2026-01-01T00:00:00").getTime();
+/* =========================
+   USER INFO
+========================= */
+const displayName = username ? `@${username}` : "Guest";
+document.getElementById("user-info").textContent =
+  fid ? `👤 ${displayName}` : "👤 Guest";
+
+/* =========================
+   COUNTDOWN (UTC+0)
+========================= */
+/*
+  2026-01-01 00:00:00 UTC
+*/
+const targetUTC = Date.UTC(2026, 0, 1, 0, 0, 0);
 
 setInterval(() => {
-  const now = Date.now();
-  const diff = target - now;
+  const nowUTC = Date.now(); // UTC timestamp
+  const diff = targetUTC - nowUTC;
 
-  if (diff < 0) {
+  if (diff <= 0) {
     document.querySelector(".countdown").style.display = "none";
-    document.getElementById("msg").innerText =
-      "🎉 Selamat Tahun Baru 2026! 🎉";
+    document.getElementById("msg").textContent =
+      "🎉 Happy New Year 2026 (UTC)!";
     return;
   }
 
-  d.innerText = Math.floor(diff / 86400000);
-  h.innerText = Math.floor(diff % 86400000 / 3600000);
-  m.innerText = Math.floor(diff % 3600000 / 60000);
-  s.innerText = Math.floor(diff % 60000 / 1000);
+  d.textContent = Math.floor(diff / 86400000);
+  h.textContent = Math.floor((diff % 86400000) / 3600000);
+  m.textContent = Math.floor((diff % 3600000) / 60000);
+  s.textContent = Math.floor((diff % 60000) / 1000);
 }, 1000);
 
-/* ======================
-   BUBBLE ACTION
-   ====================== */
-bubble.onclick = () => {
-  if (isMobile) {
-    // MOBILE → redirect (100% works)
-    window.open(
-      "https://onchat.sebayaki.com/happy-new-year",
-      "_blank"
-    );
-    return;
-  }
+/* =========================
+   CHAT BUBBLE (ALWAYS AVAILABLE)
+========================= */
+const chatBubble = document.getElementById("chat-bubble");
 
-  // DESKTOP → toggle chat
-  chatOpen = !chatOpen;
-  document.body.classList.toggle("chat-hidden", !chatOpen);
-  bubble.innerText = chatOpen ? "✖" : "💬";
+function openChat() {
+  chatOpen = true;
+  document.body.classList.remove("chat-minimized");
+  chatBubble.textContent = "✕";
+  chatBubble.classList.remove("unread");
+}
+
+function closeChat() {
+  chatOpen = false;
+  document.body.classList.add("chat-minimized");
+  chatBubble.textContent = "💬";
+}
+
+chatBubble.onclick = () => {
+  chatOpen ? closeChat() : openChat();
 };
 
-/* ======================
-   INIT ONCHAT (DESKTOP)
-   ====================== */
-if (!isMobile) {
-  document.body.classList.add("chat-hidden"); // default minimized
-
-  OnChat.mount("#onchat-widget", {
-    channel: "happy-new-year",
-    theme: "beeper-green",
-    hideBrand: true
-  });
-}
+/* =========================
+   INIT ONCHAT (IMMEDIATE)
+========================= */
+OnChat.mount("#onchat-widget", {
+  channel: "happy-new-year",
+  theme: "beeper-green",
+  hideBrand: true,
+  user: { name: displayName }
+});
 </script>
 
 </body>
