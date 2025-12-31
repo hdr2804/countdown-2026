@@ -5,12 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Happy New Year 2026</title>
 
-<!-- FARCASTER MINI APP META (WAJIB) -->
-<meta property="fc:miniapp" content="v1" />
-<meta property="fc:miniapp:name" content="Happy New Year 2026 Countdown" />
-<meta property="fc:miniapp:description" content="Global UTC countdown and live chat for New Year 2026" />
-<meta property="fc:miniapp:image" content="https://countdown-2026-kohl.vercel.app/frame.png" />
-<meta property="fc:miniapp:url" content="https://countdown-2026-kohl.vercel.app" />
+<!-- =========================
+     OPEN GRAPH (TIMELINE PREVIEW)
+========================= -->
+<meta property="og:title" content="🎆 Happy New Year 2026 Countdown" />
+<meta property="og:description"
+      content="Global UTC countdown + live chat. Join the celebration 🎉" />
+<meta property="og:image"
+      content="https://countdown-2026-kohl.vercel.app/frame.png" />
+<meta property="og:url"
+      content="https://countdown-2026-kohl.vercel.app" />
+<meta property="og:type" content="website" />
 
 <style>
 body {
@@ -48,6 +53,12 @@ body {
   font-size: 28px;
   font-weight: 700;
 }
+
+.hint {
+  margin-top: 16px;
+  font-size: 14px;
+  opacity: 0.7;
+}
 </style>
 </head>
 
@@ -63,6 +74,7 @@ body {
     <div class="unit"><span id="s">0</span>Seconds</div>
   </div>
 
+  <p class="hint">💬 Live chat is open — say hello 👋</p>
   <p id="msg"></p>
 </div>
 
@@ -72,7 +84,9 @@ body {
 <script src="https://onchat.sebayaki.com/widget.js"></script>
 
 <script>
-/* Countdown UTC */
+/* =========================
+   COUNTDOWN (UTC+0)
+========================= */
 const targetUTC = Date.UTC(2026, 0, 1, 0, 0, 0);
 
 setInterval(() => {
@@ -91,11 +105,23 @@ setInterval(() => {
   s.textContent = Math.floor((diff % 60000) / 1000);
 }, 1000);
 
-/* Init OnChat */
+/* =========================
+   INIT ONCHAT
+========================= */
 OnChat.mount("#onchat-widget", {
   channel: "happy-new-year",
   theme: "beeper-green",
   hideBrand: true
+});
+
+/* =========================
+   AUTO-OPEN CHAT (SAFE)
+========================= */
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    const iframe = document.querySelector("iframe[src*='onchat']");
+    if (iframe) iframe.style.display = "block";
+  }, 800);
 });
 </script>
 
