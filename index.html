@@ -11,12 +11,12 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   background: radial-gradient(circle at top, #1e293b, #020617);
   color: white;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
 }
 
+/* Layout */
 .app {
-  height: 100%;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -30,8 +30,10 @@ body {
   top: 16px;
   left: 16px;
   font-size: 14px;
+  z-index: 10;
 }
 
+/* Countdown */
 .countdown {
   display: flex;
   gap: 12px;
@@ -50,11 +52,6 @@ body {
   font-weight: 700;
 }
 
-/* Chat container */
-#onchat-widget.hidden {
-  display: none;
-}
-
 /* Bubble */
 #chat-bubble {
   position: fixed;
@@ -67,7 +64,7 @@ body {
   color: white;
   font-size: 26px;
   border: none;
-  z-index: 9999;
+  z-index: 10000;
   cursor: pointer;
 }
 </style>
@@ -75,7 +72,7 @@ body {
 
 <body>
 
-<div class="header" id="user-info">👤 Guest</div>
+<div class="header">👋 Happy New Year Chat</div>
 
 <div class="app">
   <h1>🎆 Happy New Year 2026</h1>
@@ -90,7 +87,7 @@ body {
   <p id="msg"></p>
 </div>
 
-<!-- OnChat -->
+<!-- ONCHAT CONTAINER (DO NOT HIDE) -->
 <div id="onchat-widget"></div>
 
 <!-- Bubble -->
@@ -99,18 +96,6 @@ body {
 <script src="https://onchat.sebayaki.com/widget.js"></script>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const username = params.get("username");
-const displayName = username ? `@${username}` : "Guest";
-document.getElementById("user-info").textContent = `👤 ${displayName}`;
-
-const chatBubble = document.getElementById("chat-bubble");
-const chatContainer = document.getElementById("onchat-widget");
-let chatOpen = false;
-
-/* Hide chat at start */
-chatContainer.classList.add("hidden");
-
 /* Countdown UTC */
 const targetUTC = Date.UTC(2026, 0, 1, 0, 0, 0);
 
@@ -128,19 +113,16 @@ setInterval(() => {
   s.textContent = Math.floor((diff % 60000) / 1000);
 }, 1000);
 
-/* Bubble toggle */
-chatBubble.onclick = () => {
-  chatOpen = !chatOpen;
-  chatContainer.classList.toggle("hidden", !chatOpen);
-  chatBubble.textContent = chatOpen ? "✕" : "💬";
+/* Bubble = just hint (OnChat handles its own open/close) */
+document.getElementById("chat-bubble").onclick = () => {
+  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
 };
 
 /* Init OnChat */
 OnChat.mount("#onchat-widget", {
   channel: "happy-new-year",
   theme: "beeper-green",
-  hideBrand: true,
-  user: { name: displayName }
+  hideBrand: true
 });
 </script>
 
